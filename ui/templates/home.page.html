@@ -5,5 +5,32 @@
 {{ end }}
 
 {{ define "body" }} 
-    <h1> {{ . }} </h1>
+    {{ if .IsAuthenticated }}
+    {{ else }}
+    <div class="uk-container uk-align-right uk-margin uk-width-2-5">
+        <form action="/login" method="post" class="uk-card uk-card-small uk-card-default uk-card-body ">
+            <div class="uk-margin">
+                <label for="username" class="uk-form-label"> Username </label>
+                <div class="uk-form-controls">
+                    <input type="text" class="uk-input" id="username" name="name">
+                </div>
+            </div>
+
+            <div class="uk-margin">
+                <label for="password" class="uk-form-label"> Password </label>
+                <div class="uk-form-controls">
+                    <input type="password" class="uk-input" id="password" name="pass">
+                </div>
+            </div>
+
+            <div class="uk-margin">
+                <input type="submit" class="uk-button uk-button-primary" value="Login">
+            </div>
+
+            <div class="uk-card-footer">
+                <a href="/signup">  Don't an account ?  create one </a>
+            </div>
+        </form>
+    </div>
+    {{ end }}
 {{ end }}

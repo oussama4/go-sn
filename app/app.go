@@ -23,6 +23,7 @@ func (a *App) routes() *chi.Mux {
 
 	r.Get("/static/*", Static("./ui/static"))
 	r.Get("/", a.index)
+	r.Get("/signup", a.signup)
 
 	return r
 }

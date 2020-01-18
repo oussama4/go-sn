@@ -1,0 +1,36 @@
+{{ template "base" . }}
+
+{{ define "title" }}
+    Sign up
+{{ end }}
+
+{{ define "body" }}
+    <div class="uk-flex uk-flex-center uk-margin">
+        <form action="/signup" method="post" class="uk-card uk-card-small uk-card-default uk-card-body ">
+            <div class="uk-margin">
+                <label for="username" class="uk-form-label"> Username </label>
+                <div class="uk-form-controls">
+                    <input type="text" class="uk-input" id="username" name="name">
+                </div>
+            </div>
+
+            <div class="uk-margin">
+                <label for="email" class="uk-form-label"> Email </label>
+                <div class="uk-form-controls">
+                    <input type="email" class="uk-input" id="email" name="email">
+                </div>
+            </div>
+
+            <div class="uk-margin">
+                <label for="password" class="uk-form-label"> Password </label>
+                <div class="uk-form-controls">
+                    <input type="password" class="uk-input" id="password" name="pass">
+                </div>
+            </div>
+
+            <div class="uk-margin">
+                <input type="submit" class="uk-button uk-button-primary" value="SignUp">
+            </div>
+        </form>
+    </div>
+{{ end }}
