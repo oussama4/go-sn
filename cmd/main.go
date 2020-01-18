@@ -1,10 +1,9 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	"github.com/oussama4/go-sn/app"
 )
 
 func main() {
-	fmt.Println(os.Getenv("DATABASE_URL"))
+	app.Start()
 }
