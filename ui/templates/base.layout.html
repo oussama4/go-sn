@@ -5,9 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/static/css/uikit.min.css">
     <title> {{ template "title" }} </title>
 </head>
 <body>
+    <nav class="uk-navbar-container" uk-navbar>
+        <div class="uk-navbar-left">
+            <a href="/" class="uk-navbar-item uk-logo"> Go-sn </a>
+        </div>
+    </nav>
+
     {{ template "body" . }}
 </body>
 </html>

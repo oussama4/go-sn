@@ -21,6 +21,7 @@ func (a *App) routes() *chi.Mux {
 
 	r.Use(middleware.Logger)
 
+	r.Get("/static/*", Static("./ui/static"))
 	r.Get("/", a.index)
 
 	return r
