@@ -8,12 +8,18 @@
     {{ if .IsAuthenticated }}
     {{ else }}
     <div class="uk-container uk-align-right uk-margin uk-width-2-5">
-        <form action="/login" method="post" class="uk-card uk-card-small uk-card-default uk-card-body ">
+        <form action="/login" method="post" 
+                class="uk-card uk-card-small uk-card-default uk-card-body " autocomplete="off" novalidate>
             <div class="uk-margin">
-                <label for="username" class="uk-form-label"> Username </label>
+                <label for="email" class="uk-form-label"> Email </label>
                 <div class="uk-form-controls">
-                    <input type="text" class="uk-input" id="username" name="name">
+                    <input type="text" class="uk-input" id="email" name="email">
                 </div>
+                {{ with .form.Errors.email }}
+                    {{ range . }}
+                        <p class="uk-text-danger"> {{ . }} </p>
+                    {{ end }}
+                {{ end }}
             </div>
 
             <div class="uk-margin">
@@ -21,6 +27,11 @@
                 <div class="uk-form-controls">
                     <input type="password" class="uk-input" id="password" name="pass">
                 </div>
+                {{ with .form.Errors.pass }}
+                    {{ range . }}
+                        <p class="uk-text-danger"> {{ . }} </p>
+                    {{ end }}
+                {{ end }}
             </div>
 
             <div class="uk-margin">

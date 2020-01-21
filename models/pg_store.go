@@ -15,6 +15,8 @@ var (
 	ErrEmailExist = errors.New("Email allready exists")
 
 	ErrUsernameExist = errors.New("username already exists")
+
+	ErrInvalidCredentials = errors.New("Invalid credentials")
 )
 
 // New creates a new database connection
@@ -74,9 +76,27 @@ func (ps *pgUserStore) Insert(name, email, password string) error {
 func (ps *pgUserStore) Get(id int) (*User, error) {
 	user := &User{}
 	sess := ps.db.NewSession(nil)
-	err := sess.Select("*").From("users").Where("id=$1", id).LoadOne(user)
+	err := sess.Select("*").From("users").Where("id=?", id).LoadOne(user)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
+}
+
+func (ps *pgUserStore) Authenticate(email, password string) (int, error) {
+	user := &User{}
+	sess := ps.db.NewSession(nil)
+	err := sess.Select("*").From("users").Where("email=?", email).LoadOne(user)
+	if err != nil {
+		return 0, err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err == bcrypt.ErrMismatchedHashAndPassword {
+		return 0, ErrInvalidCredentials
+	} else if err != nil {
+		return 0, err
+	}
+
+	return user.ID, nil
 }

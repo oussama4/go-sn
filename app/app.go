@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/alexedwards/scs/postgresstore"
+	"github.com/alexedwards/scs/v2"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/oussama4/go-sn/models"
@@ -15,6 +17,7 @@ import (
 type App struct {
 	logger    *log.Logger
 	templates map[string]*template.Template
+	sm        *scs.SessionManager
 	userStore models.UserStore
 }
 
@@ -22,11 +25,13 @@ func (a *App) routes() *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
 
 	r.Get("/static/*", Static("./ui/static"))
 	r.Get("/", a.index)
 	r.Get("/signup", a.signup)
 	r.Post("/signup", a.handleSignup)
+	r.Post("/login", a.HandleLogin)
 
 	return r
 }
@@ -64,20 +69,25 @@ func Start() {
 	if err != nil {
 		l.Fatalln(err)
 	}
+
 	db, err := models.New(l)
 	if err != nil {
 		l.Fatal(err)
 	}
 	us := models.NewUserStore(l, db)
+
+	sessionMan := scs.New()
+	sessionMan.Store = postgresstore.New(db.DB)
 	app := App{
 		logger:    l,
 		templates: cache,
+		sm:        sessionMan,
 		userStore: us,
 	}
 
 	srv := &http.Server{
 		Addr:    os.Getenv("ADDRESS"),
-		Handler: app.routes(),
+		Handler: app.sm.LoadAndSave(app.routes()),
 	}
 
 	app.logger.Printf("starting server on %s", os.Getenv("ADDRESS"))
