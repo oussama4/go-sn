@@ -9,11 +9,13 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/oussama4/go-sn/models"
 )
 
 type App struct {
 	logger    *log.Logger
 	templates map[string]*template.Template
+	userStore models.UserStore
 }
 
 func (a *App) routes() *chi.Mux {
@@ -24,6 +26,7 @@ func (a *App) routes() *chi.Mux {
 	r.Get("/static/*", Static("./ui/static"))
 	r.Get("/", a.index)
 	r.Get("/signup", a.signup)
+	r.Post("/signup", a.handleSignup)
 
 	return r
 }
@@ -61,9 +64,15 @@ func Start() {
 	if err != nil {
 		l.Fatalln(err)
 	}
+	db, err := models.New(l)
+	if err != nil {
+		l.Fatal(err)
+	}
+	us := models.NewUserStore(l, db)
 	app := App{
 		logger:    l,
 		templates: cache,
+		userStore: us,
 	}
 
 	srv := &http.Server{

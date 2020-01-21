@@ -4,10 +4,10 @@ import "time"
 
 type User struct {
 	ID        int
-	Username  string
+	Username  string `db:"user_name"`
 	Email     string
 	Password  string
 	Bio       string
 	Avatar    string
-	CreatedAt time.Time
+	CreatedAt time.Time `db:"created_at"`
 }

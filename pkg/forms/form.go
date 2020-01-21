@@ -14,7 +14,7 @@ var EmailRx = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9
 // Form holds form data and the errors associated with it
 type Form struct {
 	url.Values
-	errors Errors
+	Errors Errors
 }
 
 // New creates a form struct given the form data
@@ -31,7 +31,7 @@ func (f *Form) Required(fields ...string) {
 	for _, field := range fields {
 		value := f.Get(field)
 		if strings.TrimSpace(value) == "" {
-			f.errors.Add(field, "this field is required")
+			f.Errors.Add(field, "this field is required")
 		}
 	}
 }
@@ -44,7 +44,7 @@ func (f *Form) MaxLength(field string, max int) {
 	}
 
 	if utf8.RuneCountInString(value) > max {
-		f.errors.Add(field, fmt.Sprintf("%s must not pass %d characters", field, max))
+		f.Errors.Add(field, fmt.Sprintf("%s must not pass %d characters", field, max))
 	}
 }
 
@@ -56,7 +56,7 @@ func (f *Form) MinLength(field string, min int) {
 	}
 
 	if utf8.RuneCountInString(value) < min {
-		f.errors.Add(field, fmt.Sprintf("%s must have at least %d characters", field, min))
+		f.Errors.Add(field, fmt.Sprintf("%s must have at least %d characters", field, min))
 	}
 }
 
@@ -67,6 +67,23 @@ func (f *Form) ValidEmail(field string) {
 		return
 	}
 	if !EmailRx.MatchString(value) {
-		f.errors.Add(field, "email is not valid")
+		f.Errors.Add(field, "email is not valid")
 	}
+}
+
+// StringsMatch checks if two strings are the same
+func (f *Form) StringsMatch(field1, field2 string) {
+	value1 := f.Get(field1)
+	value2 := f.Get(field2)
+	if value1 == "" && value2 == "" {
+		return
+	}
+	if strings.TrimSpace(value1) != strings.TrimSpace(value2) {
+		f.Errors.Add(field1, fmt.Sprintf("%s does not match %s", field1, field2))
+	}
+}
+
+// Valid returns true if the form is valid
+func (f *Form) Valid() bool {
+	return len(f.Errors) == 0
 }
