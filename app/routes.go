@@ -18,6 +18,7 @@ func (a *App) routes() *chi.Mux {
 	r.Get("/signup", a.signup)
 	r.Post("/signup", a.handleSignup)
 	r.Post("/login", a.HandleLogin)
+	r.Get("/logout", a.handleLogout)
 
 	return r
 }

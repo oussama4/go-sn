@@ -100,3 +100,13 @@ func (a *App) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	a.sm.Put(r.Context(), "user_id", id)
 	http.Redirect(w, r, "/", http.StatusFound)
 }
+
+func (a *App) handleLogout(w http.ResponseWriter, r *http.Request) {
+	err := a.sm.Destroy(r.Context())
+	if err != nil {
+		a.logger.Println(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, "/", http.StatusFound)
+}
