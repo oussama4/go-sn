@@ -17,6 +17,7 @@ type App struct {
 	templates map[string]*template.Template
 	sm        *scs.SessionManager
 	userStore models.UserStore
+	td        map[string]interface{}
 }
 
 // Start start the http server
@@ -41,11 +42,16 @@ func Start() {
 
 	sessionMan := scs.New()
 	sessionMan.Store = postgresstore.New(db.DB)
+
+	data := make(map[string]interface{})
+	data["user"] = nil
+
 	app := App{
 		logger:    l,
 		templates: cache,
 		sm:        sessionMan,
 		userStore: us,
+		td:        data,
 	}
 
 	srv := &http.Server{

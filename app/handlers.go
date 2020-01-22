@@ -16,9 +16,8 @@ func (a *App) index(w http.ResponseWriter, r *http.Request) {
 		isAuthenticated = true
 	}
 
-	d := make(map[string]interface{})
-	d["IsAuthenticated"] = isAuthenticated
-	a.html(w, "home.page.html", d)
+	a.td["IsAuthenticated"] = isAuthenticated
+	a.html(w, "home.page.html", a.td)
 }
 
 // serves the signup page
@@ -41,24 +40,21 @@ func (a *App) handleSignup(w http.ResponseWriter, r *http.Request) {
 	f.StringsMatch("pass1", "pass2")
 
 	if !f.Valid() {
-		data := make(map[string]interface{})
-		data["form"] = f
-		a.html(w, "signup.page.html", data)
+		a.td["form"] = f
+		a.html(w, "signup.page.html", a.td)
 		return
 	}
 
 	err = a.userStore.Insert(f.Get("name"), f.Get("email"), f.Get("pass1"))
 	if err == models.ErrUsernameExist {
 		f.Errors.Add("name", "username already in use")
-		data := make(map[string]interface{})
-		data["form"] = f
-		a.html(w, "signup.page.html", data)
+		a.td["form"] = f
+		a.html(w, "signup.page.html", a.td)
 		return
 	} else if err == models.ErrEmailExist {
 		f.Errors.Add("email", "email already in use")
-		data := make(map[string]interface{})
-		data["form"] = f
-		a.html(w, "signup.page.html", data)
+		a.td["form"] = f
+		a.html(w, "signup.page.html", a.td)
 		return
 	} else if err != nil {
 		a.logger.Println(err)
@@ -78,18 +74,16 @@ func (a *App) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	f := forms.New(r.PostForm)
 	f.Required("email", "pass")
 	if !f.Valid() {
-		data := make(map[string]interface{})
-		data["form"] = f
-		a.html(w, "home.page.html", data)
+		a.td["form"] = f
+		a.html(w, "home.page.html", a.td)
 		return
 	}
 
 	id, err := a.userStore.Authenticate(f.Get("email"), f.Get("pass"))
 	if err == models.ErrInvalidCredentials || err == dbr.ErrNotFound {
 		f.Errors.Add("email", "Invalid credentials")
-		data := make(map[string]interface{})
-		data["form"] = f
-		a.html(w, "home.page.html", data)
+		a.td["form"] = f
+		a.html(w, "home.page.html", a.td)
 		return
 	} else if err != nil {
 		a.logger.Println(err)

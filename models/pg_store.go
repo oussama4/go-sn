@@ -58,6 +58,7 @@ func (ps *pgUserStore) Insert(name, email, password string) error {
 
 	_, err = sess.InsertInto("users").Columns("user_name", "email", "password").Record(&user).Exec()
 	if err != nil {
+		// TODO: doesn't work as expected
 		if pqError, ok := err.(pq.Error); ok {
 			if pqError.Code == "23505" {
 				ps.logger.Printf("column name: %s", pqError.Column)
