@@ -1,7 +1,6 @@
 package app
 
 import (
-	"bytes"
 	"html/template"
 	"log"
 	"net/http"
@@ -9,8 +8,7 @@ import (
 
 	"github.com/alexedwards/scs/postgresstore"
 	"github.com/alexedwards/scs/v2"
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	"github.com/joho/godotenv"
 	"github.com/oussama4/go-sn/models"
 )
 
@@ -21,51 +19,16 @@ type App struct {
 	userStore models.UserStore
 }
 
-func (a *App) routes() *chi.Mux {
-	r := chi.NewRouter()
-
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
-
-	r.Get("/static/*", Static("./ui/static"))
-	r.Get("/", a.index)
-	r.Get("/signup", a.signup)
-	r.Post("/signup", a.handleSignup)
-	r.Post("/login", a.HandleLogin)
-
-	return r
-}
-
-// html renders an html template
-func (a *App) html(w http.ResponseWriter, name string, data interface{}) {
-	t, ok := a.templates[name]
-	if !ok {
-		a.logger.Printf("template %s does not exist", name)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	buf := new(bytes.Buffer)
-
-	err := t.Execute(buf, data)
-	if err != nil {
-		a.logger.Println(err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	_, err = buf.WriteTo(w)
-	if err != nil {
-		a.logger.Println(err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-}
-
 // Start start the http server
 func Start() {
 	l := log.New(os.Stdout, "LOGGER: ", log.Ldate|log.Ltime|log.Lshortfile)
-	cache, err := newTemplateCache("./ui/templates")
+
+	err := godotenv.Load()
+	if err != nil {
+		l.Fatalln(err)
+	}
+
+	cache, err := newTemplateCache(os.Getenv("TEMPLATES_PATH"))
 	if err != nil {
 		l.Fatalln(err)
 	}

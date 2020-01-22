@@ -1,4 +1,3 @@
-include .env
 
 CMDBIN = gosn
 

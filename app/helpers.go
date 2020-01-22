@@ -3,6 +3,7 @@ package app
 import (
 	"net/http"
 	"os"
+	"bytes"
 )
 
 type staticFileServer struct {
@@ -28,5 +29,31 @@ func Static(path string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fileserver := http.FileServer(staticFileServer{http.Dir(path)})
 		http.StripPrefix("/static", fileserver).ServeHTTP(w, r)
+	}
+}
+
+// html renders an html template
+func (a *App) html(w http.ResponseWriter, name string, data interface{}) {
+	t, ok := a.templates[name]
+	if !ok {
+		a.logger.Printf("template %s does not exist", name)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	buf := new(bytes.Buffer)
+
+	err := t.Execute(buf, data)
+	if err != nil {
+		a.logger.Println(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	_, err = buf.WriteTo(w)
+	if err != nil {
+		a.logger.Println(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
 	}
 }
