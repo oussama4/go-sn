@@ -1,0 +1,14 @@
+{{ template "base" . }}
+
+{{ define "title" }}
+    Profile
+{{ end }}
+
+{{ define "body" }}
+    <div class="uk-section uk-section-default uk-box-shadow-small uk-margin-large">
+        <div class="uk-container uk-container-small">
+            <img src="/static/{{ .user.Avatar }}" alt="" class="uk-border-circle" width="200" height="200">
+            <div class="uk-text-lead"> {{ .user.Username }} </div>
+        </div>
+    </div>
+{{ end }}

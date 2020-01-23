@@ -104,3 +104,7 @@ func (a *App) handleLogout(w http.ResponseWriter, r *http.Request) {
 	}
 	http.Redirect(w, r, "/", http.StatusFound)
 }
+
+func (a *App) HandleProfile(w http.ResponseWriter, r *http.Request) {
+	a.html(w, "profile.page.html", a.td)
+}

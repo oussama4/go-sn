@@ -22,3 +22,16 @@ func (a *App) AddUser(next http.HandlerFunc) http.HandlerFunc {
 		next(w, r)
 	}
 }
+
+// LoginRequired rejects any request from an unauthenticated user
+func (a *App) LoginRequired(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		userID := a.sm.GetInt(r.Context(), "user_id")
+		if userID != 0 {
+			a.td["IsAuthenticated"] = true
+			next(w, r)
+			return
+		}
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+}
