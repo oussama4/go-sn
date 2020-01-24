@@ -17,6 +17,7 @@ type App struct {
 	templates map[string]*template.Template
 	sm        *scs.SessionManager
 	userStore models.UserStore
+	connStore models.ConnectionStore
 	td        map[string]interface{}
 }
 
@@ -39,6 +40,7 @@ func Start() {
 		l.Fatal(err)
 	}
 	us := models.NewUserStore(l, db)
+	cs := models.NewConnStore(l, db)
 
 	sessionMan := scs.New()
 	sessionMan.Store = postgresstore.New(db.DB)
@@ -51,6 +53,7 @@ func Start() {
 		templates: cache,
 		sm:        sessionMan,
 		userStore: us,
+		connStore: cs,
 		td:        data,
 	}
 

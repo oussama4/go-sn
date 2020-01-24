@@ -2,7 +2,9 @@ package app
 
 import (
 	"net/http"
+	"strconv"
 
+	"github.com/go-chi/chi"
 	"github.com/gocraft/dbr/v2"
 	"github.com/oussama4/go-sn/models"
 	"github.com/oussama4/go-sn/pkg/forms"
@@ -106,5 +108,29 @@ func (a *App) handleLogout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) HandleProfile(w http.ResponseWriter, r *http.Request) {
+	a.html(w, "profile.page.html", a.td)
+}
+
+// HandleOtherProfile handles a request from the current authenticated user to other profiles
+func (a *App) HandleOtherProfile(w http.ResponseWriter, r *http.Request) {
+	userID, _ := strconv.Atoi(chi.URLParam(r, "userID"))
+	userID2 := a.sm.GetInt(r.Context(), "user_id")
+
+	user, err := a.userStore.Get(userID)
+	if err != nil {
+		a.logger.Println(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	connected, err := a.connStore.AreConnected(userID, userID2)
+	if err != nil {
+		a.logger.Println(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	a.td["connected"] = connected
+	a.td["other_user"] = user
 	a.html(w, "profile.page.html", a.td)
 }

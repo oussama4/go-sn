@@ -5,3 +5,7 @@ type UserStore interface {
 	Get(id int) (*User, error)
 	Authenticate(email, password string) (int, error)
 }
+
+type ConnectionStore interface {
+	AreConnected(is, with int) (bool, error)
+}
