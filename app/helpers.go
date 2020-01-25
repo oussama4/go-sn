@@ -1,9 +1,10 @@
 package app
 
 import (
+	"bytes"
 	"net/http"
 	"os"
-	"bytes"
+	"strings"
 )
 
 type staticFileServer struct {
@@ -56,4 +57,14 @@ func (a *App) html(w http.ResponseWriter, name string, data interface{}) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+}
+
+// DeleteEmpty takes a map of strings and  returns it after removing empty string values
+func DeleteEmpty(m map[string]string) map[string]string {
+	for k, v := range m {
+		if strings.TrimSpace(v) == "" {
+			delete(m, k)
+		}
+	}
+	return m
 }

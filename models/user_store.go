@@ -75,3 +75,16 @@ func (ps *pgUserStore) Authenticate(email, password string) (int, error) {
 
 	return user.ID, nil
 }
+
+func (ps *pgUserStore) Update(id int, updated map[string]string) error {
+	m := make(map[string]interface{})
+	for k, v := range updated {
+		m[k] = v
+	}
+	sess := ps.db.NewSession(nil)
+	_, err := sess.Update("users").SetMap(m).Where("id=?", id).Exec()
+	if err != nil {
+		return err
+	}
+	return nil
+}

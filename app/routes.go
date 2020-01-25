@@ -21,6 +21,8 @@ func (a *App) routes() *chi.Mux {
 	r.Get("/logout", a.handleLogout)
 	r.Get("/profile", a.LoginRequired(a.AddUser(a.HandleProfile)))
 	r.Get("/profile/{userID}", a.LoginRequired(a.AddUser(a.HandleOtherProfile)))
+	r.Get("/profile/settings", a.LoginRequired(a.AddUser(a.HandleSettingsPage)))
+	r.Post("/profile/edit", a.LoginRequired(a.AddUser(a.HandleSettings)))
 
 	return r
 }

@@ -1,7 +1,10 @@
 package app
 
 import (
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/go-chi/chi"
@@ -133,4 +136,54 @@ func (a *App) HandleOtherProfile(w http.ResponseWriter, r *http.Request) {
 	a.td["connected"] = connected
 	a.td["other_user"] = user
 	a.html(w, "profile.page.html", a.td)
+}
+
+func (a *App) HandleSettingsPage(w http.ResponseWriter, r *http.Request) {
+	a.html(w, "settings.page.html", a.td)
+}
+
+func (a *App) HandleSettings(w http.ResponseWriter, r *http.Request) {
+	fn := ""
+	f, fh, err := r.FormFile("avatar")
+	if err != nil && err != http.ErrMissingFile {
+		a.logger.Println(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	} else if err == nil {
+		defer f.Close()
+		fn = filepath.Join("img/avatars", fh.Filename)
+	}
+
+	// fields that are going to be updated
+	updated := DeleteEmpty(map[string]string{
+		"name":   r.PostFormValue("name"),
+		"bio":    r.PostFormValue("bio"),
+		"avatar": fn,
+	})
+
+	if len(updated) == 0 {
+		a.td["update_error"] = "you didn't provide anything new"
+		a.html(w, "settings.page.html", a.td)
+		return
+	}
+
+	userID := a.sm.GetInt(r.Context(), "user_id")
+	if err = a.userStore.Update(userID, updated); err != nil {
+		a.logger.Println(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	if fn != "" {
+		out, err := os.Create(filepath.Join(os.Getenv("STATIC_PATH"), fn))
+		defer out.Close()
+		_, err = io.Copy(out, f)
+		if err != nil {
+			a.logger.Println(err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	http.Redirect(w, r, "/profile", http.StatusFound)
 }
