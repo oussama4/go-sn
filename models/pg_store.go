@@ -32,4 +32,3 @@ func New(l *log.Logger) (*dbr.Connection, error) {
 	l.Println("connected to database")
 	return con, nil
 }
-
