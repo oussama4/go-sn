@@ -6,6 +6,27 @@
 
 {{ define "body" }} 
     {{ if .IsAuthenticated }}
+        <div class="uk-container uk-panel uk-box-shadow-medium uk-width-2-5" >
+            <form action="/activity/create" method="post" enctype="multipart/form-data" autocomplete="off" novalidate>
+                <div class="uk-margin">
+                    <div class="uk-form-controls">
+                        <textarea style="resize: none;" name="txt" id="txt" cols="40" rows="8" class="uk-text-area" 
+                                        placeholder=""></textarea>
+                    </div>
+                </div>
+                
+                <div class="uk-margin uk-clear-fix"> 
+                            <div class="uk-inline" uk-form-custom>
+                                <input type="file" accept="image/png, image/jpeg" id="img" name="img">
+                                <button class="uk-icon-button" type="button" uk-icon="icon: image; ratio: 2"></button>
+                            </div>
+                    <input type="submit" value="Post" class="uk-button uk-button-primary uk-float-right">
+                    {{ with .empty_payload }}
+                            <p class="uk-text-danger"> you didn't provide anything ! </p>
+                    {{ end }}
+                </div>
+            </form>
+        </div>
     {{ else }}
     <div class="uk-container uk-align-right uk-margin uk-width-2-5">
         <form action="/login" method="post" 

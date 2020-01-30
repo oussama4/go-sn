@@ -30,8 +30,8 @@ type BaseObject struct {
 
 type PostObject struct {
 	BaseObject
-	Content string
-	Link    string
+	Txt string
+	Img string
 }
 
 // BaseActivity holds data that is shared between all type of activities
@@ -46,8 +46,8 @@ type CreateActivity struct {
 	Object PostObject
 }
 
-func NewCreateActivity(actor int, atype, content, link string) CreateActivity {
-	return CreateActivity{
+func NewCreateActivity(actor int, atype, txt, img string) *CreateActivity {
+	return &CreateActivity{
 		BaseActivity: BaseActivity{
 			AType: atype,
 			Actor: actor,
@@ -56,8 +56,8 @@ func NewCreateActivity(actor int, atype, content, link string) CreateActivity {
 			BaseObject: BaseObject{
 				OType: POST,
 			},
-			Content: content,
-			Link:    link,
+			Txt: txt,
+			Img: img,
 		},
 	}
 }

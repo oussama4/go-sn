@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/alexedwards/scs/postgresstore"
+	"github.com/gocraft/dbr/v2"
 	"github.com/alexedwards/scs/v2"
 	"github.com/joho/godotenv"
 	"github.com/oussama4/go-sn/models"
@@ -14,6 +15,7 @@ import (
 
 type App struct {
 	logger    *log.Logger
+	db *dbr.Connection
 	templates map[string]*template.Template
 	sm        *scs.SessionManager
 	userStore models.UserStore
@@ -50,6 +52,7 @@ func Start() {
 
 	app := App{
 		logger:    l,
+		db: db,
 		templates: cache,
 		sm:        sessionMan,
 		userStore: us,

@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/go-chi/chi"
 	"github.com/gocraft/dbr/v2"
@@ -186,4 +187,50 @@ func (a *App) HandleSettings(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/profile", http.StatusFound)
+}
+
+// HandleCreateActivity handles the creation of activities of type CREATE
+func (a *App) HandleCreateActivity(w http.ResponseWriter, r *http.Request) {
+	fn := ""
+	noFile := false
+	txt := r.PostFormValue("txt")
+	txt = strings.TrimSpace(txt)
+	userID := a.sm.GetInt(r.Context(), "user_id")
+	f, fh, err := r.FormFile("img")
+	if err == http.ErrMissingFile {
+		noFile = true
+	} else if err != nil {
+		a.logger.Println(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	} else if err == nil {
+		defer f.Close()
+		fn = filepath.Join("img/post", fh.Filename)
+	}
+
+	if txt == "" && noFile {
+		a.td["empty_payload"] = true
+		a.html(w, "home.page.html", a.td)
+		return
+	} else {
+		ac := models.NewCreateActivity(userID, models.CREATE, txt, fn)
+		if err := ac.Save(a.db); err != nil {
+			a.logger.Println(err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+		// upload the image
+		if !noFile {
+			out, err := os.Create(filepath.Join(os.Getenv("STATIC_PATH"), fn))
+			defer out.Close()
+			_, err = io.Copy(out, f)
+			if err != nil {
+				a.logger.Println(err)
+				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				return
+			}
+		}
+	}
+
+	http.Redirect(w, r, "/", http.StatusFound)
 }
