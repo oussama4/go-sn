@@ -9,14 +9,14 @@ func (a *App) AddUser(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userID := a.sm.GetInt(r.Context(), "user_id")
 		if userID != 0 {
-			if a.td["user"] == nil {
+			if a.user == nil {
 				user, err := a.userStore.Get(userID)
 				if err != nil {
 					a.logger.Println(err)
 					http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 					return
 				}
-				a.td["user"] = user
+				a.user = user
 			}
 		}
 		next(w, r)
@@ -28,7 +28,7 @@ func (a *App) LoginRequired(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userID := a.sm.GetInt(r.Context(), "user_id")
 		if userID != 0 {
-			a.td["IsAuthenticated"] = true
+			a.isAuthenticated = true
 			next(w, r)
 			return
 		}

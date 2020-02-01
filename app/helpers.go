@@ -34,7 +34,7 @@ func Static(path string) http.HandlerFunc {
 }
 
 // html renders an html template
-func (a *App) html(w http.ResponseWriter, name string, data interface{}) {
+func (a *App) html(w http.ResponseWriter, name string, data M) {
 	t, ok := a.templates[name]
 	if !ok {
 		a.logger.Printf("template %s does not exist", name)
@@ -42,8 +42,12 @@ func (a *App) html(w http.ResponseWriter, name string, data interface{}) {
 		return
 	}
 
-	buf := new(bytes.Buffer)
+	// add global data
+	data["IsAuthenticated"] = a.isAuthenticated
+	data["User"] = a.user
 
+	// render the template to a buffer
+	buf := new(bytes.Buffer)
 	err := t.Execute(buf, data)
 	if err != nil {
 		a.logger.Println(err)

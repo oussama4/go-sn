@@ -7,24 +7,26 @@ import (
 	"os"
 
 	"github.com/alexedwards/scs/postgresstore"
-	"github.com/gocraft/dbr/v2"
 	"github.com/alexedwards/scs/v2"
+	"github.com/gocraft/dbr/v2"
 	"github.com/joho/godotenv"
 	"github.com/oussama4/go-sn/models"
 )
 
 type App struct {
-	logger    *log.Logger
-	db *dbr.Connection
-	templates map[string]*template.Template
-	sm        *scs.SessionManager
-	userStore models.UserStore
-	connStore models.ConnectionStore
-	td        map[string]interface{}
+	isAuthenticated bool
+	logger          *log.Logger
+	db              *dbr.Connection
+	user            *models.User
+	sm              *scs.SessionManager
+	templates       map[string]*template.Template
+	userStore       models.UserStore
+	connStore       models.ConnectionStore
 }
 
-// Start start the http server
+// Start creates an App instance and starts an http server
 func Start() {
+	// create the app
 	l := log.New(os.Stdout, "LOGGER: ", log.Ldate|log.Ltime|log.Lshortfile)
 
 	err := godotenv.Load()
@@ -47,19 +49,18 @@ func Start() {
 	sessionMan := scs.New()
 	sessionMan.Store = postgresstore.New(db.DB)
 
-	data := make(map[string]interface{})
-	data["user"] = nil
-
 	app := App{
-		logger:    l,
-		db: db,
-		templates: cache,
-		sm:        sessionMan,
-		userStore: us,
-		connStore: cs,
-		td:        data,
+		isAuthenticated: false,
+		logger:          l,
+		db:              db,
+		user:            nil,
+		sm:              sessionMan,
+		templates:       cache,
+		userStore:       us,
+		connStore:       cs,
 	}
 
+	// start the http server
 	srv := &http.Server{
 		Addr:    os.Getenv("ADDRESS"),
 		Handler: app.sm.LoadAndSave(app.routes()),

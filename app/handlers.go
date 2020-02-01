@@ -15,20 +15,17 @@ import (
 )
 
 func (a *App) index(w http.ResponseWriter, r *http.Request) {
-	isAuthenticated := false
-
 	userID := a.sm.GetInt(r.Context(), "user_id")
 	if userID != 0 {
-		isAuthenticated = true
+		a.isAuthenticated = true
 	}
 
-	a.td["IsAuthenticated"] = isAuthenticated
-	a.html(w, "home.page.html", a.td)
+	a.html(w, "home.page.html", M{})
 }
 
 // serves the signup page
 func (a *App) signup(w http.ResponseWriter, r *http.Request) {
-	a.html(w, "signup.page.html", nil)
+	a.html(w, "signup.page.html", M{})
 }
 
 // TODO: simplify this handler
@@ -46,21 +43,21 @@ func (a *App) handleSignup(w http.ResponseWriter, r *http.Request) {
 	f.StringsMatch("pass1", "pass2")
 
 	if !f.Valid() {
-		a.td["form"] = f
-		a.html(w, "signup.page.html", a.td)
+		data := M{"form": f}
+		a.html(w, "signup.page.html", data)
 		return
 	}
 
 	err = a.userStore.Insert(f.Get("name"), f.Get("email"), f.Get("pass1"))
 	if err == models.ErrUsernameExist {
 		f.Errors.Add("name", "username already in use")
-		a.td["form"] = f
-		a.html(w, "signup.page.html", a.td)
+		data := M{"form": f}
+		a.html(w, "signup.page.html", data)
 		return
 	} else if err == models.ErrEmailExist {
 		f.Errors.Add("email", "email already in use")
-		a.td["form"] = f
-		a.html(w, "signup.page.html", a.td)
+		data := M{"form": f}
+		a.html(w, "signup.page.html", data)
 		return
 	} else if err != nil {
 		a.logger.Println(err)
@@ -80,16 +77,16 @@ func (a *App) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	f := forms.New(r.PostForm)
 	f.Required("email", "pass")
 	if !f.Valid() {
-		a.td["form"] = f
-		a.html(w, "home.page.html", a.td)
+		data := M{"form": f}
+		a.html(w, "home.page.html", data)
 		return
 	}
 
 	id, err := a.userStore.Authenticate(f.Get("email"), f.Get("pass"))
 	if err == models.ErrInvalidCredentials || err == dbr.ErrNotFound {
 		f.Errors.Add("email", "Invalid credentials")
-		a.td["form"] = f
-		a.html(w, "home.page.html", a.td)
+		data := M{"form": f}
+		a.html(w, "home.page.html", data)
 		return
 	} else if err != nil {
 		a.logger.Println(err)
@@ -112,7 +109,7 @@ func (a *App) handleLogout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) HandleProfile(w http.ResponseWriter, r *http.Request) {
-	a.html(w, "profile.page.html", a.td)
+	a.html(w, "profile.page.html", M{})
 }
 
 // HandleOtherProfile handles a request from the current authenticated user to other profiles
@@ -134,13 +131,15 @@ func (a *App) HandleOtherProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	a.td["connected"] = connected
-	a.td["other_user"] = user
-	a.html(w, "profile.page.html", a.td)
+	data := M{
+		"connected":  connected,
+		"other_user": user,
+	}
+	a.html(w, "profile.page.html", data)
 }
 
 func (a *App) HandleSettingsPage(w http.ResponseWriter, r *http.Request) {
-	a.html(w, "settings.page.html", a.td)
+	a.html(w, "settings.page.html", M{})
 }
 
 func (a *App) HandleSettings(w http.ResponseWriter, r *http.Request) {
@@ -163,8 +162,8 @@ func (a *App) HandleSettings(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if len(updated) == 0 {
-		a.td["update_error"] = "you didn't provide anything new"
-		a.html(w, "settings.page.html", a.td)
+		data := M{"update_error": "you didn't provide anything new"}
+		a.html(w, "settings.page.html", data)
 		return
 	}
 
@@ -209,8 +208,8 @@ func (a *App) HandleCreateActivity(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if txt == "" && noFile {
-		a.td["empty_payload"] = true
-		a.html(w, "home.page.html", a.td)
+		data := M{"empty_payload": true}
+		a.html(w, "home.page.html", data)
 		return
 	} else {
 		ac := models.NewCreateActivity(userID, models.CREATE, txt, fn)

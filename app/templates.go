@@ -5,6 +5,9 @@ import (
 	"path/filepath"
 )
 
+// M contains data that is going to be apllied to a template
+type M map[string]interface{}
+
 func newTemplateCache(dir string) (map[string]*template.Template, error) {
 	cache := map[string]*template.Template{}
 	pages, err := filepath.Glob(filepath.Join(dir, "*.page.html"))
