@@ -24,9 +24,21 @@ func (cs *pgConnStore) AreConnected(is, with int) (bool, error) {
 	c, err := sess.SelectBySql(q, is, with, 1, with, is, 1).Load(&conns)
 	if err != nil {
 		return false, err
-	}
-	if c == 0 {
+	} else if c == 0 {
 		return false, nil
 	}
 	return true, nil
+}
+
+func (cs *pgConnStore) Connections(user int) ([]int, error) {
+	q := `select user_one as u from connections where user_two=? and status=? 
+	union select user_two as u from connections where user_one=? and status=?`
+	r := []int{}
+	sess := cs.db.NewSession(nil)
+	_, err := sess.SelectBySql(q, user, 1, user, 1).Load(&r)
+	if err != nil {
+		return r, err
+	}
+
+	return r, nil
 }

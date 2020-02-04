@@ -233,3 +233,21 @@ func (a *App) HandleCreateActivity(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/", http.StatusFound)
 }
+
+func (a *App) HandleActivityRetrieve(w http.ResponseWriter, r *http.Request) {
+	userID := a.sm.GetInt(r.Context(), "user_id")
+	ids, err := a.connStore.Connections(userID)
+	if err != nil {
+		a.logger.Println(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	ids = append(ids, userID)
+	res, err := a.activityStore.Activities(ids, 0, 10)
+	if err != nil {
+		a.logger.Println(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	RespondJSON(w, res, http.StatusOK)
+}

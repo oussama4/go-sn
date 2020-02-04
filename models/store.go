@@ -9,4 +9,11 @@ type UserStore interface {
 
 type ConnectionStore interface {
 	AreConnected(is, with int) (bool, error)
+	// get the IDs of  a user connections
+	Connections(user int) ([]int, error)
+}
+
+type ActivityStore interface {
+	// given  a slice of user IDs  return a slice of activities
+	Activities(users []int, offset, limit int) ([]interface{}, error)
 }

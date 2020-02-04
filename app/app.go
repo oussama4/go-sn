@@ -22,6 +22,7 @@ type App struct {
 	templates       map[string]*template.Template
 	userStore       models.UserStore
 	connStore       models.ConnectionStore
+	activityStore   models.ActivityStore
 }
 
 // Start creates an App instance and starts an http server
@@ -45,6 +46,7 @@ func Start() {
 	}
 	us := models.NewUserStore(l, db)
 	cs := models.NewConnStore(l, db)
+	as := models.NewActivityStore(l, db)
 
 	sessionMan := scs.New()
 	sessionMan.Store = postgresstore.New(db.DB)
@@ -58,6 +60,7 @@ func Start() {
 		templates:       cache,
 		userStore:       us,
 		connStore:       cs,
+		activityStore:   as,
 	}
 
 	// start the http server

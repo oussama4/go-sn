@@ -2,6 +2,7 @@ package app
 
 import (
 	"bytes"
+	"encoding/json"
 	"net/http"
 	"os"
 	"strings"
@@ -44,7 +45,7 @@ func (a *App) html(w http.ResponseWriter, name string, data M) {
 
 	// add global data
 	data["IsAuthenticated"] = a.isAuthenticated
-	data["User"] = a.user
+	data["user"] = a.user
 
 	// render the template to a buffer
 	buf := new(bytes.Buffer)
@@ -71,4 +72,19 @@ func DeleteEmpty(m map[string]string) map[string]string {
 		}
 	}
 	return m
+}
+
+// RespondJSON converts a go values to json and sends it to the client
+func RespondJSON(w http.ResponseWriter, v interface{}, statusCode int) error {
+	j, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(statusCode)
+	if _, err := w.Write(j); err != nil {
+		return err
+	}
+	return nil
 }
