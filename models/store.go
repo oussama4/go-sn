@@ -15,5 +15,5 @@ type ConnectionStore interface {
 
 type ActivityStore interface {
 	// given  a slice of user IDs  return a slice of activities
-	Activities(users []int, offset, limit int) ([]interface{}, error)
+	Activities(users []int, offset, limit int) ([]map[string]interface{}, error)
 }

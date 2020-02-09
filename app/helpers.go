@@ -36,7 +36,7 @@ func Static(path string) http.HandlerFunc {
 
 // html renders an html template
 func (a *App) html(w http.ResponseWriter, name string, data M) {
-	t, ok := a.templates[name]
+	t, ok := a.templates[name+".tmpl"]
 	if !ok {
 		a.logger.Printf("template %s does not exist", name)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

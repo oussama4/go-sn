@@ -10,7 +10,7 @@ type M map[string]interface{}
 
 func newTemplateCache(dir string) (map[string]*template.Template, error) {
 	cache := map[string]*template.Template{}
-	pages, err := filepath.Glob(filepath.Join(dir, "*.page.html"))
+	pages, err := filepath.Glob(filepath.Join(dir, "*.page.tmpl"))
 	if err != nil {
 		return nil, err
 	}
@@ -22,7 +22,7 @@ func newTemplateCache(dir string) (map[string]*template.Template, error) {
 			return nil, err
 		}
 
-		t, err = t.ParseGlob(filepath.Join(dir, "*.layout.html"))
+		t, err = t.ParseGlob(filepath.Join(dir, "*.layout.tmpl"))
 		if err != nil {
 			return nil, err
 		}

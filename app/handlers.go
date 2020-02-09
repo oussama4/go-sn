@@ -20,12 +20,12 @@ func (a *App) index(w http.ResponseWriter, r *http.Request) {
 		a.isAuthenticated = true
 	}
 
-	a.html(w, "home.page.html", M{})
+	a.html(w, "home.page", M{})
 }
 
 // serves the signup page
 func (a *App) signup(w http.ResponseWriter, r *http.Request) {
-	a.html(w, "signup.page.html", M{})
+	a.html(w, "signup.page", M{})
 }
 
 // TODO: simplify this handler
@@ -44,7 +44,7 @@ func (a *App) handleSignup(w http.ResponseWriter, r *http.Request) {
 
 	if !f.Valid() {
 		data := M{"form": f}
-		a.html(w, "signup.page.html", data)
+		a.html(w, "signup.page", data)
 		return
 	}
 
@@ -52,12 +52,12 @@ func (a *App) handleSignup(w http.ResponseWriter, r *http.Request) {
 	if err == models.ErrUsernameExist {
 		f.Errors.Add("name", "username already in use")
 		data := M{"form": f}
-		a.html(w, "signup.page.html", data)
+		a.html(w, "signup.page", data)
 		return
 	} else if err == models.ErrEmailExist {
 		f.Errors.Add("email", "email already in use")
 		data := M{"form": f}
-		a.html(w, "signup.page.html", data)
+		a.html(w, "signup.page", data)
 		return
 	} else if err != nil {
 		a.logger.Println(err)
@@ -78,7 +78,7 @@ func (a *App) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	f.Required("email", "pass")
 	if !f.Valid() {
 		data := M{"form": f}
-		a.html(w, "home.page.html", data)
+		a.html(w, "home.page", data)
 		return
 	}
 
@@ -86,7 +86,7 @@ func (a *App) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	if err == models.ErrInvalidCredentials || err == dbr.ErrNotFound {
 		f.Errors.Add("email", "Invalid credentials")
 		data := M{"form": f}
-		a.html(w, "home.page.html", data)
+		a.html(w, "home.page", data)
 		return
 	} else if err != nil {
 		a.logger.Println(err)
@@ -109,7 +109,7 @@ func (a *App) handleLogout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) HandleProfile(w http.ResponseWriter, r *http.Request) {
-	a.html(w, "profile.page.html", M{})
+	a.html(w, "profile.page", M{})
 }
 
 // HandleOtherProfile handles a request from the current authenticated user to other profiles
@@ -135,11 +135,11 @@ func (a *App) HandleOtherProfile(w http.ResponseWriter, r *http.Request) {
 		"connected":  connected,
 		"other_user": user,
 	}
-	a.html(w, "profile.page.html", data)
+	a.html(w, "profile.page", data)
 }
 
 func (a *App) HandleSettingsPage(w http.ResponseWriter, r *http.Request) {
-	a.html(w, "settings.page.html", M{})
+	a.html(w, "settings.page", M{})
 }
 
 func (a *App) HandleSettings(w http.ResponseWriter, r *http.Request) {
@@ -163,7 +163,7 @@ func (a *App) HandleSettings(w http.ResponseWriter, r *http.Request) {
 
 	if len(updated) == 0 {
 		data := M{"update_error": "you didn't provide anything new"}
-		a.html(w, "settings.page.html", data)
+		a.html(w, "settings.page", data)
 		return
 	}
 

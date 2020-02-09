@@ -122,17 +122,25 @@ func (ca *CreateActivity) Save(db *dbr.Connection) error {
 }
 
 // create a slice of Activity types from ActivityRecord types for the purpuse of encoding it to json
-func activitiesFromRecords(activities []ActivityRecord) ([]interface{}, error) {
-	r := []interface{}{}
+func activitiesFromRecords(activities []ActivityRecord) ([]map[string]interface{}, error) {
+	r := []map[string]interface{}{}
 
 	for _, v := range activities {
+		m := map[string]interface{}{}
+		m["id"] = v.AID
+		m["type"] = v.Atype
+		m["actor"] = v.Actor
+		m["name"] = v.Username
+		m["avatar"] = v.Avatar
+		m["created"] = v.Created
 		switch v.Atype {
 		case CREATE:
 			a := NewCreateActivityFromRecord(v)
 			if err := a.Decode(v.Content); err != nil {
 				return nil, err
 			}
-			r = append(r, a)
+			m["object"] = a.Object
+			r = append(r, m)
 		}
 	}
 	return r, nil

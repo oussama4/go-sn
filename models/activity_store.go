@@ -15,7 +15,7 @@ func NewActivityStore(l *log.Logger, db *dbr.Connection) ActivityStore {
 	return &pgActivityStore{l, db}
 }
 
-func (as *pgActivityStore) Activities(ids []int, offset, limit int) ([]interface{}, error) {
+func (as *pgActivityStore) Activities(ids []int, offset, limit int) ([]map[string]interface{}, error) {
 	sess := as.db.NewSession(nil)
 	r := []ActivityRecord{}
 
