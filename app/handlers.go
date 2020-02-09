@@ -236,6 +236,8 @@ func (a *App) HandleCreateActivity(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) HandleActivityRetrieve(w http.ResponseWriter, r *http.Request) {
 	userID := a.sm.GetInt(r.Context(), "user_id")
+	offset, _ := strconv.Atoi(r.FormValue("offset"))
+	limit, _ := strconv.Atoi(r.FormValue("limit"))
 	ids, err := a.connStore.Connections(userID)
 	if err != nil {
 		a.logger.Println(err)
@@ -243,7 +245,7 @@ func (a *App) HandleActivityRetrieve(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	ids = append(ids, userID)
-	res, err := a.activityStore.Activities(ids, 0, 10)
+	res, err := a.activityStore.Activities(ids, offset, limit)
 	if err != nil {
 		a.logger.Println(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
