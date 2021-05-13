@@ -1,0 +1,94 @@
+{{ template "base" . }}
+
+{{ define "title" }} 
+    Home
+{{ end }}
+
+{{ define "body" }} 
+    {{ if .IsAuthenticated }}
+        <div class="uk-container uk-panel uk-box-shadow-medium uk-width-2-5" >
+            <form action="/activity/create" method="post" enctype="multipart/form-data" autocomplete="off" novalidate>
+                <div class="uk-margin">
+                    <div class="uk-form-controls">
+                        <textarea style="resize: none;" name="txt" id="txt" cols="40" rows="8" class="uk-text-area" 
+                                        placeholder=""></textarea>
+                    </div>
+                </div>
+                
+                <div class="uk-margin uk-clear-fix"> 
+                            <div class="uk-inline" uk-form-custom>
+                                <input type="file" accept="image/png, image/jpeg" id="img" name="img">
+                                <button class="uk-icon-button" type="button" uk-icon="icon: image; ratio: 2"></button>
+                            </div>
+                    <input type="submit" value="Post" class="uk-button uk-button-primary uk-float-right">
+                    {{ with .empty_payload }}
+                            <p class="uk-text-danger"> you didn't provide anything ! </p>
+                    {{ end }}
+                </div>
+            </form>
+        </div>
+
+	<div id="stream" class="uk-container uk-flex uk-flex-column uk-flex-center uk-width-2-3 uk-margin" v-cloak>
+	    <div class="" v-for="(a, i) in activities" :key="i">
+		<div class="uk-card uk-card-default">
+		    <div class="uk-card-body">
+			<div class="uk-grid-small" uk-grid>
+			    <div class="uk-width-auto">
+				<img class="uk-border-circle" :src="/static/ + a.avatar" alt="" width="40" height="40">
+			    </div>
+			    <div class="uk-width-expand">
+				<a :href="/profile/ + a.actor" class="uk-link-text"> [[a.name]] </a>
+			    </div>
+			    <div class="uk-width-1-1">
+				<p> [[a.object.Txt]] </p>
+			    </div>
+			</div>
+		    </div>
+		</div>
+		<br>
+	    </div>
+	</div>
+
+	<div class="uk-margin-large-top uk-height-medium" id="scroll_target">
+	    
+	</div>
+
+    {{ else }}
+    <div class="uk-container uk-align-right uk-margin uk-width-2-5">
+        <form action="/login" method="post" 
+                class="uk-card uk-card-small uk-card-default uk-card-body " autocomplete="off" novalidate>
+            <div class="uk-margin">
+                <label for="email" class="uk-form-label"> Email </label>
+                <div class="uk-form-controls">
+                    <input type="text" class="uk-input" id="email" name="email">
+                </div>
+                {{ with .form.Errors.email }}
+                    {{ range . }}
+                        <p class="uk-text-danger"> {{ . }} </p>
+                    {{ end }}
+                {{ end }}
+            </div>
+
+            <div class="uk-margin">
+                <label for="password" class="uk-form-label"> Password </label>
+                <div class="uk-form-controls">
+                    <input type="password" class="uk-input" id="password" name="pass">
+                </div>
+                {{ with .form.Errors.pass }}
+                    {{ range . }}
+                        <p class="uk-text-danger"> {{ . }} </p>
+                    {{ end }}
+                {{ end }}
+            </div>
+
+            <div class="uk-margin">
+                <input type="submit" class="uk-button uk-button-primary" value="Login">
+            </div>
+
+            <div class="uk-card-footer">
+                <a href="/signup">  Don't an account ?  create one </a>
+            </div>
+        </form>
+    </div>
+    {{ end }}
+{{ end }}

@@ -1,0 +1,55 @@
+{{ template "base" . }}
+
+{{ define "title" }}
+    settings
+{{ end }}
+
+{{ define "body" }}
+    <div class="uk-background-muted">
+        <div class="uk-container uk-container-small">
+            <ul uk-accordion="collapsible: false">
+                <li class="uk-open">
+                    <a class="uk-accordion-title" href="#"> general user information </a>
+                    <div class="uk-accordion-content">
+                        <form action="/profile/edit" method="post" enctype="multipart/form-data" autocomplete="off" novalidate>
+
+                            <div class="uk-margin">
+                                <label for="name" class="uk-form-label"> Name </label>
+                                <div class="uk-form-controls">
+                                    <input type="text" class="uk-input" id="name" name="name">
+                                </div>
+                            </div>
+        
+                            <div class="uk-margin">
+                                <label for="bio" class="uk-form-label"> Bio </label>
+                                <div class="uk-form-controls">
+                                    <textarea class="uk-textarea" name="bio" id="bio" cols="30" rows="3"></textarea>
+                                </div>
+                            </div>
+        
+                            <div class="uk-margin" uk-margin>
+                                <label for="avatar" class="uk-form-label"> Avatar   </label>
+                                <div uk-form-custom="target: true">
+                                    <input type="file" id="avatar" accept="image/png, image/jpeg" name="avatar">
+                                    <input class="uk-input uk-form-width-large" type="text" placeholder="Select file" disabled>
+                                </div>
+                                {{ with .update_error }}
+                                    <p class="uk-text-danger"> {{ . }} </p>
+                                {{ end }}
+                            </div>
+        
+                            <div class="uk-margin">
+                                <input type="submit" class="uk-button uk-button-primary" value="Save">
+                            </div>
+                        </form>
+                    </div>
+                </li>
+
+                <li>
+                    <a class="uk-accordion-title" href="#"> change password </a>
+                    <div class="uk-accordion-content"></div>
+                </li>
+            </ul>
+        </div>
+    </div>
+{{ end }}

@@ -1,0 +1,64 @@
+{{ template "base" . }}
+
+{{ define "title" }}
+    Sign up
+{{ end }}
+
+{{ define "body" }}
+    <div class="uk-flex uk-flex-center uk-margin">
+        <form action="/signup" method="post" 
+                    class="uk-card uk-card-small uk-card-default uk-card-body" autocomplete="off" novalidate>
+            <div class="uk-margin">
+                <label for="username" class="uk-form-label"> Username </label>
+                <div class="uk-form-controls">
+                    <input type="text" class="uk-input" id="username" name="name">
+                </div>
+                {{ with .form.Errors.name }}
+                    {{ range . }}
+                        <p class="uk-text-danger"> {{ . }} </p>
+                    {{ end }}
+                {{ end }}
+            </div>
+
+            <div class="uk-margin">
+                <label for="email" class="uk-form-label"> Email </label>
+                <div class="uk-form-controls">
+                    <input type="email" class="uk-input" id="email" name="email">
+                </div>
+                {{ with .form.Errors.email }}
+                    {{ range . }}
+                        <p class="uk-text-danger"> {{ . }} </p>
+                    {{ end }}
+                {{ end }}
+            </div>
+
+            <div class="uk-margin">
+                <label for="password1" class="uk-form-label"> Password </label>
+                <div class="uk-form-controls">
+                    <input type="password" class="uk-input" id="password1" name="pass1">
+                </div>
+                {{ with .form.Errors.pass1 }}
+                    {{ range . }}
+                        <p class="uk-text-danger"> {{ . }} </p>
+                    {{ end }}
+                {{ end }}
+            </div>
+
+            <div class="uk-margin">
+                <label for="password2" class="uk-form-label"> Retype Password </label>
+                <div class="uk-form-controls">
+                    <input type="password" class="uk-input" id="password2" name="pass2">
+                </div>
+                {{ with .form.Errors.pass2 }}
+                    {{ range . }}
+                        <p class="uk-text-danger"> {{ . }} </p>
+                    {{ end }}
+                {{ end }}
+            </div>
+
+            <div class="uk-margin">
+                <input type="submit" class="uk-button uk-button-primary" value="SignUp">
+            </div>
+        </form>
+    </div>
+{{ end }}

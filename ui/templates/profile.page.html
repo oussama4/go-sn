@@ -1,0 +1,16 @@
+{{ template "base" . }}
+
+{{ define "title" }}
+    Profile
+{{ end }}
+
+{{ define "body" }}
+    <div class="uk-background-muted">
+        <div class="uk-container uk-container-small uk-box-shadow-medium uk-background-default">
+                <img data-src="/static/{{ .user.Avatar }}" alt="" class="uk-border-circle" width="200" height="200" uk-img>
+                <div class="uk-text-lead"> {{ .user.Username }} </div>
+                <div class="uk-text-normal"> {{ .user.Bio.String }} </div>
+            </div>
+        </div>
+    </div>
+{{ end }}
