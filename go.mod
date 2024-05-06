@@ -9,7 +9,6 @@ require (
 	github.com/gocraft/dbr/v2 v2.6.3
 	github.com/joho/godotenv v1.3.0
 	github.com/lib/pq v1.2.0
-	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
-	golang.org/x/net v0.7.0 // indirect
+	golang.org/x/crypto v0.17.0
 	google.golang.org/appengine v1.6.7 // indirect
 )
